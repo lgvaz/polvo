@@ -25,6 +25,6 @@ d = { 'settings': { 'audience': 'Developers',
                 'title': 'polvo',
                 'tst_flags': 'notest',
                 'user': 'lgvaz',
-                'version': '0.0.1'},
+                'version': '0.1.2'},
   'syms': { 'polvo.core': { 'polvo.core.foo': 'https://lgvaz.github.io/polvo/core.html#foo',
                             'polvo.core.say_hello': 'https://lgvaz.github.io/polvo/core.html#say_hello'}}}
