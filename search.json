@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "core.html",
+    "href": "core.html",
+    "title": "module name here",
+    "section": "",
+    "text": "say_hello\n\n say_hello (to)\n\nSay hello to somebody\n\n\n\n\nsay_hello(\"Isaac\")\n\n'Hello Isaac!'\n\n\n\nfrom IPython.display import display,SVG\n\n\ndisplay(SVG('<svg height=\"100\"><circle cx=\"50\" cy=\"50\" r=\"40\"/></svg>'))"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Polvo",
+    "section": "",
+    "text": "This file will become your README and also the index of your documentation."
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "Polvo",
+    "section": "Install",
+    "text": "Install\npip install polvo"
+  },
+  {
+    "objectID": "index.html#how-to-use",
+    "href": "index.html#how-to-use",
+    "title": "Polvo",
+    "section": "How to use",
+    "text": "How to use\nFill me in please! Don’t forget code examples:\n\n1+1\n\n2"
+  }
+]
