@@ -9,7 +9,7 @@ from fastai.vision.all import *
 
 # %% ../nbs/00_core.ipynb 15
 def image_grid(
-    images: Sequence[PILBase],
+    shows: Sequence[Union[PILBase, TensorImageBase]],
     ncols=3,
     nrows=None,
     pad=0.0,
@@ -19,14 +19,14 @@ def image_grid(
 ):
     from mpl_toolkits.axes_grid1 import ImageGrid
 
-    nrows = nrows or int(np.ceil(len(images) / ncols))
+    nrows = nrows or int(np.ceil(len(shows) / ncols))
     figsize = figsize or (14, 4 * nrows)
 
     fig = plt.figure(figsize=figsize)
     grid = ImageGrid(fig, 111, (nrows, ncols), axes_pad=pad, **kwargs)
 
-    for ax, image in zip(grid, images):
-        image.show(ax)
+    for ax, show in zip(grid, shows):
+        show(ctx=ax)
 
     if show:
         plt.show()
@@ -70,8 +70,8 @@ class ClassificationExplorer:
     def show_most_common(self, idx: int, slice_=slice(None)):
         idxs = self.grouped_y.iloc[idx].idx
         idxs = idxs[slice_]
-        images = [self.x_tl[i] for i in idxs]
-        return image_grid(images)
+        shows = [self.x_tl[i].show for i in idxs]
+        return image_grid(shows)
     
     @classmethod
     def from_datasets(cls, dss):
