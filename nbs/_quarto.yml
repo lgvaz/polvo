@@ -12,24 +12,24 @@ format:
     theme: cosmo
     css: styles.css
     toc: true
+    toc-depth: 4
 
 website:
   title: "polvo"
+  site-url: "https://lgvaz.github.io/polvo/"
   description: "A collection of computer vision tools that fits anywhere"
-  execute: 
-    enabled: false
   twitter-card: true
   open-graph: true
   reader-mode: true
   repo-branch: master
-  repo-url: https://github.com/lgvaz/polvo/
+  repo-url: "https://github.com/lgvaz/polvo/"
   repo-actions: [issue]
   navbar:
     background: primary
     search: true
     right:
       - icon: github
-        href: https://github.com/lgvaz/polvo/
+        href: "https://github.com/lgvaz/polvo/"
   sidebar:
     style: "floating"
 
