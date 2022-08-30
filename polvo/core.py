@@ -16,6 +16,8 @@ def image_grid(
     pad=0.0,
     figsize=None,
     show=True,
+    xmax=None,
+    ymax=None,
     **kwargs
 ):
     from mpl_toolkits.axes_grid1 import ImageGrid
@@ -28,6 +30,8 @@ def image_grid(
 
     for ax, show in zip(grid, shows):
         show(ctx=ax)
+        ax.set_xlim(right=xmax)
+        ax.set_ylim(bottom=ymax)
 
     if show:
         plt.show()
@@ -72,8 +76,12 @@ class ClassificationExplorer:
     def show_most_common(self, idx: int, slice_=slice(None)):
         idxs = self.grouped_y.iloc[idx].idx
         idxs = idxs[slice_]
-        shows = [self.x_tl[i].show for i in idxs]
-        return image_grid(shows)
+        
+        images = [self.x_tl[i] for i in idxs]
+        shows = [image.show for image in images]
+        xmax, ymax = np.max([image.size for image in images], axis=0)
+        
+        return image_grid(shows, xmax=xmax, ymax=ymax)
     
     @classmethod
     def from_datasets(cls, dss):
@@ -117,17 +125,24 @@ def show_tfms(
     dl, # A `DataLoader` instance. Commonly `dls.train` or `dls.valid`
     unique_idx=None, # If specified, show only images with index `unique_idx`.
     max_n=5, # Maximum number of samples.
+    ncols=2,
+    pad=0.2,
     **kwargs,
 ):
     "Show original and transformed version of images."
     (xs, ys), idxs = one_batch_with_idxs(dl, unique_idx=unique_idx)
     
     shows = []
+    xmax, ymax = 0, 0 # Has to be passed to show grid so images are not cut when displayed
     for i, x, idx in zip(range(max_n), xs, idxs):
-        def _s(ctx, idx=idx):
-            return show_at(dl.dataset, idx, ctx=show_title(idx, ctx=ctx))
+        orig = dl.dataset[idx]
+        image = orig[0]
+        xmax = max(xmax, x.shape[2], image.shape[1])
+        ymax = max(ymax, x.shape[1], image.shape[0])
+        
+        def _s(ctx, orig=orig, idx=idx):
+            return dl.dataset.show(orig, ctx=show_title(idx, ctx=ctx))
         shows.append(_s)
         shows.append(x.show)
         
-    ncols = kwargs.pop('ncols', None) or 2
-    return image_grid(shows, ncols=ncols, **kwargs)
+    return image_grid(shows, ncols=ncols, pad=pad, xmax=xmax, ymax=ymax, **kwargs)
