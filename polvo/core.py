@@ -8,7 +8,7 @@ __all__ = ['image_grid', 'group_by_count', 'ClassificationExplorer', 'image_size
 #TODO: optimize imports
 from fastai.vision.all import *
 
-# %% ../nbs/00_core.ipynb 15
+# %% ../nbs/00_core.ipynb 14
 def image_grid(
     shows: Sequence[Union[PILBase, TensorImageBase]],
     ncols=3,
@@ -36,9 +36,9 @@ def image_grid(
     if show:
         plt.show()
 
-    return grid
+    return fig, grid
 
-# %% ../nbs/00_core.ipynb 16
+# %% ../nbs/00_core.ipynb 15
 def group_by_count(label_df):
     label_df["idx"] = label_df.index
 #     label_df = label_df.groupby("label_id")["idx"].apply(list).reset_index()
@@ -47,7 +47,7 @@ def group_by_count(label_df):
     label_df = label_df.sort_values("n_samples", ascending=False).reset_index(drop=True)
     return label_df
 
-# %% ../nbs/00_core.ipynb 17
+# %% ../nbs/00_core.ipynb 16
 class ClassificationExplorer:
     def __init__(self, x_tl, y_tl):
         self.x_tl = x_tl
