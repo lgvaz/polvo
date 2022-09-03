@@ -87,12 +87,12 @@ class ClassificationExplorer:
     def from_datasets(cls, dss):
         return cls(dss.tls[0], dss.tls[1])
 
-# %% ../nbs/00_core.ipynb 21
+# %% ../nbs/00_core.ipynb 22
 def image_size(image_file):
     with Image.open(str(image_file)) as image:
         return image.size
 
-# %% ../nbs/00_core.ipynb 22
+# %% ../nbs/00_core.ipynb 23
 def image_sizes_hist(
     image_files # Sequence of image filepaths.
 ):
@@ -103,7 +103,7 @@ def image_sizes_hist(
     plt.hist(heights, label='heights')
     plt.legend()
 
-# %% ../nbs/00_core.ipynb 25
+# %% ../nbs/00_core.ipynb 26
 def one_batch_with_idxs(
     dl, # A `DataLoader` instance. Commonly `dls.train` or `dls.valid`
     unique_idx=None, # If specified, show only images with index `unique_idx`.
@@ -119,7 +119,7 @@ def one_batch_with_idxs(
     
     return (x, y), idxs
 
-# %% ../nbs/00_core.ipynb 26
+# %% ../nbs/00_core.ipynb 27
 @delegates(image_grid)
 def show_tfms(
     dl, # A `DataLoader` instance. Commonly `dls.train` or `dls.valid`
