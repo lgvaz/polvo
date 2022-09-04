@@ -1,4 +1,7 @@
 __version__ = "0.1.4"
 
-import polvo.core
+from polvo.common import *
+
 import polvo.classification
+import polvo.segmentation
+
