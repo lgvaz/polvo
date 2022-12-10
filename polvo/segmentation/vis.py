@@ -12,7 +12,7 @@ import matplotlib as mpl
 def overlay_mask(
     image:PIL.Image,
     mask:PIL.Image,
-    num_classes:int,
+    nclasses:int,
     cmap:mpl.colors.Colormap=mpl.colormaps['gist_ncar'],
     alpha:float=0.5,
 ):
