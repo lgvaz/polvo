@@ -30,7 +30,7 @@ def get_image_grid(
 
 # %% ../nbs/00_common.ipynb 13
 def show_grid(grid, shows, show=True):
-    for ax, show in zip(grid, shows): show(ctx=ax)
+    for ax, show in zip(grid, shows): show(ax=ax)
     if show: plt.show()
 
 # %% ../nbs/00_common.ipynb 14
@@ -102,7 +102,7 @@ def show_tfms(
         xmax = max(xmax, x.shape[2], image.shape[1])
         ymax = max(ymax, x.shape[1], image.shape[0])
         
-        def _s(ctx, orig=orig, idx=idx): return dl.dataset.show(orig, ctx=show_title(idx, ctx=ctx))
+        def _s(ax, orig=orig, idx=idx): return dl.dataset.show(orig, ctx=show_title(idx, ctx=ax))
         shows.append(_s)
 
     fig, grid = get_image_grid(nrows=len(shows), ncols=ncols, pad=pad, **kwargs)
