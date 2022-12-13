@@ -4,6 +4,7 @@
 __all__ = ['overlay_mask']
 
 # %% ../../nbs/03a_segmentation.vis.ipynb 3
+import polvo as pv
 import PIL
 import numpy as np
 import matplotlib as mpl
@@ -17,10 +18,11 @@ def overlay_mask(
     alpha:float=0.5,
 ):
     mask = np.asarray(mask)
+    if not len(mask.shape) == 2: raise ValueError(f'Mask bust be 2d, but got {mask.shape}')
     
     colored_mask = np.zeros((*mask.shape, 3), dtype=np.uint8)
     for class_idx in np.unique(mask):
         mask_idxs = mask == class_idx
-        colored_mask[mask_idxs] = np.array(cmap(class_idx/num_classes)[:3]) * 255
+        colored_mask[mask_idxs] = np.array(cmap(class_idx/nclasses)[:3]) * 255
 
     return PIL.Image.blend(image, PIL.Image.fromarray(colored_mask), alpha)

@@ -61,14 +61,14 @@ def image_grid(shows, show=True, xmax=None, ymax=None, **kwargs):
 
 # %% ../nbs/00_common.ipynb 19
 @delegates(image_grid)
-def grid_from_sequence(sequence, get_image, n=9, idxs=None, **kwargs):
-    idxs = idxs or random.sample(range(0, len(sequence)), n)
+def grid_from_sequence(sequence, get_image, nitems=9, idxs=None, **kwargs):
+    idxs = idxs or random.sample(range(0, len(sequence)), nitems)
     images = []
     for idx in idxs:
         item = sequence[idx]
         images.append(get_image(item))
     
-    return image_grid([partial(show_image, o) for o in images], )
+    return image_grid([partial(show_image, o) for o in images], **kwargs)
 
 # %% ../nbs/00_common.ipynb 21
 def image_size(image_file):
