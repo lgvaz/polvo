@@ -2,19 +2,18 @@
 
 # %% auto 0
 __all__ = ['show_image', 'get_image_grid', 'show_grid', 'normalize_axes', 'image_grid', 'grid_from_sequence', 'image_size',
-           'image_sizes_hist', 'one_batch_with_idxs', 'show_tfms']
+           'image_sizes_hist']
 
 # %% ../nbs/00_common.ipynb 3
-#TODO: optimize imports
 from fastcore.all import *
-from fastai.vision.all import *
+import random
 import polvo as pv
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import random
 from mpl_toolkits.axes_grid1 import ImageGrid
 
-# %% ../nbs/00_common.ipynb 10
+# %% ../nbs/00_common.ipynb 9
 @delegates(plt.subplots)
 def show_image(image, ax=None, cmap=None, show:bool=False, **kwargs):
     if ax is None: fig, ax = plt.subplots(**kwargs)
@@ -23,7 +22,7 @@ def show_image(image, ax=None, cmap=None, show:bool=False, **kwargs):
     if show: plt.show()
     return ax
 
-# %% ../nbs/00_common.ipynb 12
+# %% ../nbs/00_common.ipynb 13
 @delegates(ImageGrid)
 def get_image_grid(
     nitems=None,
@@ -42,19 +41,19 @@ def get_image_grid(
     
     return fig, grid
 
-# %% ../nbs/00_common.ipynb 13
+# %% ../nbs/00_common.ipynb 14
 def show_grid(grid, shows, show=True):
     for ax, show in zip(grid, shows): show(ax=ax)
     if show: plt.show()
 
-# %% ../nbs/00_common.ipynb 14
+# %% ../nbs/00_common.ipynb 15
 def normalize_axes(grid, xmax, ymax):
     "Expand all axes to have the same dimensions."
     for ax in grid:
         ax.set_xlim(right=xmax)
         ax.set_ylim(bottom=ymax)
 
-# %% ../nbs/00_common.ipynb 15
+# %% ../nbs/00_common.ipynb 16
 @delegates(get_image_grid, but=['nitems'])
 def image_grid(shows, show=True, xmax=None, ymax=None, **kwargs):
     "Quickly plot a grid of images."
@@ -63,9 +62,10 @@ def image_grid(shows, show=True, xmax=None, ymax=None, **kwargs):
     normalize_axes(grid, xmax, ymax)
     return fig, grid
 
-# %% ../nbs/00_common.ipynb 17
+# %% ../nbs/00_common.ipynb 18
 @delegates(image_grid)
 def grid_from_sequence(sequence, get_image, nitems=9, idxs=None, **kwargs):
+    "Generates a grid of images from a subset of items from the sequence."
     idxs = idxs or random.sample(range(0, len(sequence)), nitems)
     images = []
     for idx in idxs:
@@ -74,66 +74,18 @@ def grid_from_sequence(sequence, get_image, nitems=9, idxs=None, **kwargs):
     
     return image_grid([partial(show_image, o) for o in images], **kwargs)
 
-# %% ../nbs/00_common.ipynb 19
+# %% ../nbs/00_common.ipynb 20
 def image_size(image_file):
-    with Image.open(str(image_file)) as image:
+    with pv.open_image(image_file) as image:
         return image.size
 
-# %% ../nbs/00_common.ipynb 20
+# %% ../nbs/00_common.ipynb 21
 def image_sizes_hist(
     image_files # Sequence of image filepaths.
 ):
     "Plot a histogram of widths and heights."
-    sizes = parallel(image_size, image_files, progress=progress_bar)
+    sizes = parallel(image_size, image_files, progress=pv.pbar)
     widths, heights = zip(*sizes)
     plt.hist(widths, label='width')
     plt.hist(heights, label='heights')
     plt.legend()
-
-# %% ../nbs/00_common.ipynb 23
-def one_batch_with_idxs(
-    dl, # A `DataLoader` instance. Commonly `dls.train` or `dls.valid`
-    unique_idx=None, # If specified, show only images with index `unique_idx`.
-):
-    "Show original and transformed version of images."
-    old_get_idxs = dl.get_idxs
-
-    idxs = dl.get_idxs() if unique_idx is None else [unique_idx] * len(dl.items)
-    dl.get_idxs = lambda: idxs
-    x, y = dl.one_batch()
-
-    dl.get_idxs = old_get_idxs
-    
-    return (x, y), idxs
-
-# %% ../nbs/00_common.ipynb 24
-@delegates(image_grid)
-def show_tfms(
-    dl, # A `DataLoader` instance. Commonly `dls.train` or `dls.valid`
-    unique_idx=None, # If specified, show only images with index `unique_idx`.
-    max_n=5, # Maximum number of samples.
-    pad=0.2,
-    ncols=2,
-    **kwargs,
-):
-    "Show original and transformed version of images."
-    (xs, ys), idxs = one_batch_with_idxs(dl, unique_idx=unique_idx)
-    
-    shows = []
-    xmax, ymax = 0, 0 # Has to be passed to show grid so images are not cut when displayed
-    for i, x, idx in zip(range(max_n), xs, idxs):
-        orig = dl.dataset[idx]
-        image = orig[0]
-        xmax = max(xmax, x.shape[2], image.shape[1])
-        ymax = max(ymax, x.shape[1], image.shape[0])
-        
-        def _s(ax, orig=orig, idx=idx): return dl.dataset.show(orig, ctx=show_title(idx, ctx=ax))
-        shows.append(_s)
-
-    fig, grid = get_image_grid(nrows=len(shows), ncols=ncols, pad=pad, **kwargs)
-    
-    dl.show_batch((xs, ys), ctxs=grid[1::2], show=True)
-    show_grid(grid[::2], shows, show=False)
-    normalize_axes(grid, xmax=xmax, ymax=ymax)
-    
-    return fig, grid
