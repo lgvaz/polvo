@@ -6,11 +6,15 @@ __all__ = ['show_image', 'get_image_grid', 'show_grid', 'normalize_axes', 'image
 
 # %% ../nbs/00_common.ipynb 3
 #TODO: optimize imports
+from fastcore.all import *
 from fastai.vision.all import *
+import polvo as pv
+import pandas as pd
+import matplotlib.pyplot as plt
 import random
 from mpl_toolkits.axes_grid1 import ImageGrid
 
-# %% ../nbs/00_common.ipynb 12
+# %% ../nbs/00_common.ipynb 10
 @delegates(plt.subplots)
 def show_image(image, ax=None, cmap=None, show:bool=False, **kwargs):
     if ax is None: fig, ax = plt.subplots(**kwargs)
@@ -19,7 +23,7 @@ def show_image(image, ax=None, cmap=None, show:bool=False, **kwargs):
     if show: plt.show()
     return ax
 
-# %% ../nbs/00_common.ipynb 14
+# %% ../nbs/00_common.ipynb 12
 @delegates(ImageGrid)
 def get_image_grid(
     nitems=None,
@@ -38,19 +42,19 @@ def get_image_grid(
     
     return fig, grid
 
-# %% ../nbs/00_common.ipynb 15
+# %% ../nbs/00_common.ipynb 13
 def show_grid(grid, shows, show=True):
     for ax, show in zip(grid, shows): show(ax=ax)
     if show: plt.show()
 
-# %% ../nbs/00_common.ipynb 16
+# %% ../nbs/00_common.ipynb 14
 def normalize_axes(grid, xmax, ymax):
     "Expand all axes to have the same dimensions."
     for ax in grid:
         ax.set_xlim(right=xmax)
         ax.set_ylim(bottom=ymax)
 
-# %% ../nbs/00_common.ipynb 17
+# %% ../nbs/00_common.ipynb 15
 @delegates(get_image_grid, but=['nitems'])
 def image_grid(shows, show=True, xmax=None, ymax=None, **kwargs):
     "Quickly plot a grid of images."
@@ -59,7 +63,7 @@ def image_grid(shows, show=True, xmax=None, ymax=None, **kwargs):
     normalize_axes(grid, xmax, ymax)
     return fig, grid
 
-# %% ../nbs/00_common.ipynb 19
+# %% ../nbs/00_common.ipynb 17
 @delegates(image_grid)
 def grid_from_sequence(sequence, get_image, nitems=9, idxs=None, **kwargs):
     idxs = idxs or random.sample(range(0, len(sequence)), nitems)
@@ -70,12 +74,12 @@ def grid_from_sequence(sequence, get_image, nitems=9, idxs=None, **kwargs):
     
     return image_grid([partial(show_image, o) for o in images], **kwargs)
 
-# %% ../nbs/00_common.ipynb 21
+# %% ../nbs/00_common.ipynb 19
 def image_size(image_file):
     with Image.open(str(image_file)) as image:
         return image.size
 
-# %% ../nbs/00_common.ipynb 22
+# %% ../nbs/00_common.ipynb 20
 def image_sizes_hist(
     image_files # Sequence of image filepaths.
 ):
@@ -86,7 +90,7 @@ def image_sizes_hist(
     plt.hist(heights, label='heights')
     plt.legend()
 
-# %% ../nbs/00_common.ipynb 25
+# %% ../nbs/00_common.ipynb 23
 def one_batch_with_idxs(
     dl, # A `DataLoader` instance. Commonly `dls.train` or `dls.valid`
     unique_idx=None, # If specified, show only images with index `unique_idx`.
@@ -102,7 +106,7 @@ def one_batch_with_idxs(
     
     return (x, y), idxs
 
-# %% ../nbs/00_common.ipynb 26
+# %% ../nbs/00_common.ipynb 24
 @delegates(image_grid)
 def show_tfms(
     dl, # A `DataLoader` instance. Commonly `dls.train` or `dls.valid`
