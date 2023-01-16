@@ -73,5 +73,7 @@ d = { 'settings': { 'branch': 'master',
                                 'polvo.utils.io.mkdir': ('utils.io.html#mkdir', 'polvo/utils/io.py'),
                                 'polvo.utils.io.open_image': ('utils.io.html#open_image', 'polvo/utils/io.py'),
                                 'polvo.utils.io.open_mask': ('utils.io.html#open_mask', 'polvo/utils/io.py'),
-                                'polvo.utils.io.read_json': ('utils.io.html#read_json', 'polvo/utils/io.py')},
-            'polvo.utils.logging': {'polvo.utils.logging.pbar': ('utils.logging.html#pbar', 'polvo/utils/logging.py')}}}
+                                'polvo.utils.io.read_json': ('utils.io.html#read_json', 'polvo/utils/io.py'),
+                                'polvo.utils.io.write_txt': ('utils.io.html#write_txt', 'polvo/utils/io.py')},
+            'polvo.utils.logging': {'polvo.utils.logging.pbar': ('utils.logging.html#pbar', 'polvo/utils/logging.py')},
+            'polvo.utils.misc': {'polvo.utils.misc.kwargs_grid': ('utils.logging-copy1.html#kwargs_grid', 'polvo/utils/misc.py')}}}
