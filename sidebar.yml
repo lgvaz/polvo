@@ -2,5 +2,8 @@ website:
   sidebar:
     contents:
       - index.ipynb
-      - 00_core.ipynb
       - README.md
+      - section: API
+        contents:
+        - 01c_utils.logging.ipynb
+        - 01e_utils.io.ipynb

@@ -2,5 +2,21 @@ website:
   sidebar:
     contents:
       - index.ipynb
-      - 00_core.ipynb
-      - 02_classification.baseline.baseline.ipynb
+      - README.md
+      - section: API
+        contents:
+        - section: Utils
+          contents:
+          - 01b_utils.logging.ipynb
+          - 01e_utils.io.ipynb
+          - 01c_utils.misc.ipynb
+          - 01e_utils.io.ipynb
+          - 01m_utils.download.ipynb
+        - section: Classification
+          contents:
+          - 02a_classification.explorer.ipynb
+          - 02b_classification.baseline.baseline.ipynb
+        - section: Segmentation
+          contents:
+          - 03c_segmentation.core.ipynb
+          - 03a_segmentation.vis.ipynb
