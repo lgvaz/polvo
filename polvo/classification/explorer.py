@@ -43,7 +43,6 @@ class DataExplorer:
         item_idxs = item_idxs[slice_]
         
         images = [self.idx2image(i) for i in item_idxs]
-        shows = [partial(pv.show_image, image) for image in images]
         xmax, ymax = np.max([image.size for image in images], axis=0)
         
-        return pv.image_grid(shows, xmax=xmax, ymax=ymax)
+        return pv.image_grid(images, xmax=xmax, ymax=ymax)
