@@ -6,9 +6,12 @@ __all__ = ['DataExplorer']
 # %% ../../nbs/02a_classification.explorer.ipynb 2
 #TODO: optimize imports
 from fastcore.all import *
+
 import numpy as np
 import pandas as pd
 import polvo as pv
+
+from PIL import Image
 
 # %% ../../nbs/02a_classification.explorer.ipynb 7
 class DataExplorer:
