@@ -23,9 +23,13 @@ def safe_zip(*args, **kwargs):
     return zip(*args, **kwargs)
 
 # %% ../../nbs/01t_utils.misc.ipynb 8
-def skip_error(fn):
-    'Returns the error instead of raising it.'
-    def _inner(*args, **kwargs):
-        try: return fn(*args, **kwargs)
-        except Exception as e: return e
-    return _inner
+class skip_error:
+    def __init__(self, fn, log=True):
+        'Returns the error instead of raising it.'
+        store_attr()
+        
+    def __call__(self, *args, **kwargs):
+        try: return self.fn(*args, **kwargs)
+        except Exception as e: 
+            if self.log: print((args, kwargs))
+            return e
