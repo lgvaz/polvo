@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['image_extensions', 'save_txt', 'open_txt', 'open_json', 'save_json', 'mkdir', 'extract_files', 'get_files',
-           'get_image_files', 'open_image', 'open_mask', 'save_image', 'RenderDict']
+           'get_image_files', 'glob_match', 'open_image', 'open_mask', 'save_image', 'RenderDict']
 
 # %% ../../nbs/01e_utils.io.ipynb 2
 import shutil, tempfile
@@ -89,6 +89,11 @@ def get_image_files(path, recurse=True, folders=None):
     return get_files(path, extensions=image_extensions, recurse=recurse, folders=folders)
 
 # %% ../../nbs/01e_utils.io.ipynb 18
+def glob_match(dirpath, matches: Sequence[str], recursive=True):
+    glob = Path.rglob if recursive else Path.glob
+    return [f for match in matches for f in glob(Path(dirpath), match)]
+
+# %% ../../nbs/01e_utils.io.ipynb 21
 def open_image(path, gray=False, ignore_exif=True) -> Image.Image:
     "Open an image from disk `path` as a PIL Image"
     color = "L" if gray else "RGB"
@@ -96,17 +101,17 @@ def open_image(path, gray=False, ignore_exif=True) -> Image.Image:
     if not ignore_exif: image = ImageOps.exif_transpose(image)
     return image.convert(color)
 
-# %% ../../nbs/01e_utils.io.ipynb 20
+# %% ../../nbs/01e_utils.io.ipynb 23
 @delegates(open_image)
 def open_mask(path, gray=True, **kwargs) -> Image.Image:
     return open_image(path, gray=gray, **kwargs)
 
-# %% ../../nbs/01e_utils.io.ipynb 22
+# %% ../../nbs/01e_utils.io.ipynb 25
 def save_image(image, path):
     if isinstance(image, np.ndarray): image = Image.fromarray(image)
     return image.save(str(path))
 
-# %% ../../nbs/01e_utils.io.ipynb 24
+# %% ../../nbs/01e_utils.io.ipynb 27
 class RenderDict:
     "From https://www.reddit.com/r/IPython/comments/34t4m7/lpt_print_json_in_collapsible_format_in_ipython/"
     def __init__(self, json_data):
