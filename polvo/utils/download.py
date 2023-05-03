@@ -8,11 +8,11 @@ from fastcore.all import *
 import polvo as pv
 
 # %% ../../nbs/01m_utils.download.ipynb 4
-def download(url, save_dir, chunk_size=1024):
+def download(url, save_dir, filename=None, chunk_size=1024):
     """Download file from url"""
     import requests
     r = requests.get(url, stream=True)
-    save_path = Path(save_dir)/Path(url).name
+    save_path = Path(save_dir)/(filename or Path(url).name)
     with open(str(save_path), "wb") as f:
         bar_total = r.headers.get("Content-Length")
         bar = pv.pbar(unit="B", total=int(bar_total) if bar_total else None)
