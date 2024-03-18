@@ -6,6 +6,7 @@ __all__ = ['download', 'download_and_extract', 'download_gdrive', 'download_and_
 # %% ../../nbs/01m_utils.download.ipynb 2
 from fastcore.all import *
 import polvo as pv
+from .io import open_image
 
 # %% ../../nbs/01m_utils.download.ipynb 4
 def download(url, save_dir, filename=None, chunk_size=1024):
@@ -43,7 +44,7 @@ def download_and_extract_gdrive(url, extract_dir):
     import shutil; shutil.unpack_archive(filename=filename, extract_dir=str(extract_dir))
 
 # %% ../../nbs/01m_utils.download.ipynb 9
-@delegates(pv.open_image)
+@delegates(open_image)
 def open_image_url(url, **kwargs):
     path = pv.download(url, pv.mkdir('images', tmp=True, exist_ok=True))
     return pv.open_image(path, **kwargs)
