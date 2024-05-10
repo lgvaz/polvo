@@ -4,3 +4,4 @@ from .io import *
 from .download import *
 from .visualization import *
 from .misc import *
+from .image_size import image_size
