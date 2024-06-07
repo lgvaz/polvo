@@ -50,7 +50,7 @@ class skip_error:
     def __call__(self, *args, **kwargs):
         try: return self.fn(*args, **kwargs)
         except Exception as e: 
-            if self.log: print((args, kwargs))
+            if self.log: print(f'{e} {(args, kwargs)}')
             return e
 
 # %% ../../nbs/01t_utils.misc.ipynb 15
