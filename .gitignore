@@ -1,5 +1,6 @@
 _docs/
 wandb/
+*.pkl
 
 *.bak
 .gitattributes
