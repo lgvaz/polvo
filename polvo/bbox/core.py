@@ -9,17 +9,19 @@ import math
 import numpy as np
 import polvo as pv
 
-# %% ../../nbs/10a_bbox.core.ipynb 6
+# %% ../../nbs/10a_bbox.core.ipynb 5
 class _BBox:
     def __init__(self, points):
         self.points, _ = pv.sort_quadrilateral(np.array(points))
+        
+    def normalized_points(self, w, h): return self.points / np.array((w, h))
 
     @classmethod
     def from_points(cls, points): return cls(points)
     @classmethod
     def from_flat(cls, points): return cls(np.reshape(points, (4, 2)))
 
-# %% ../../nbs/10a_bbox.core.ipynb 7
+# %% ../../nbs/10a_bbox.core.ipynb 6
 class BBox(_BBox):
     """Bounding Box representation.
     Should **not** be instantiated directly, instead use `from_*` methods. e.g. `from_xyxy`, `from_xywh`.
