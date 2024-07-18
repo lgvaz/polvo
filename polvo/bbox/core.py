@@ -7,14 +7,19 @@ __all__ = ['BBox', 'OBBox']
 from fastcore.all import *
 import math
 import numpy as np
+import polvo as pv
 
-# %% ../../nbs/10a_bbox.core.ipynb 4
+# %% ../../nbs/10a_bbox.core.ipynb 6
 class _BBox:
-    def __init__(self, x1,y1, x2,y2, x3,y3, x4,y4):
-        store_attr()
-        self.points = np.array(((x1,y1), (x2,y2), (x3,y3), (x4,y4)))
+    def __init__(self, points):
+        self.points, _ = pv.sort_quadrilateral(np.array(points))
 
-# %% ../../nbs/10a_bbox.core.ipynb 5
+    @classmethod
+    def from_points(cls, points): return cls(points)
+    @classmethod
+    def from_flat(cls, points): return cls(np.reshape(points, (4, 2)))
+
+# %% ../../nbs/10a_bbox.core.ipynb 7
 class BBox(_BBox):
     """Bounding Box representation.
     Should **not** be instantiated directly, instead use `from_*` methods. e.g. `from_xyxy`, `from_xywh`.
@@ -68,7 +73,7 @@ class BBox(_BBox):
     @classmethod
     def from_xywh(cls, x, y, w, h): return cls.from_xyxy(x, y, x+w, y+h)
     @classmethod
-    def from_xyxy(cls, xmin, ymin, xmax, ymax): return cls(xmin,ymin, xmax,ymin, xmax,ymax, xmin,ymax)
+    def from_xyxy(cls, xmin, ymin, xmax, ymax): return cls.from_flat((xmin,ymin, xmax,ymin, xmax,ymax, xmin,ymax))
     @classmethod
     def from_relative_xcycwh(cls, xc, yc, bw, bh, img_width, img_height):
         # subtracting 0.5 goes from center to left/upper edge, adding goes to right/bottom
@@ -100,7 +105,7 @@ class BBox(_BBox):
             raise ValueError(f"invalid RLE or image dimensions: x1={x1} > shape[1]={w}")
         return cls.from_xyxy(x0, y0, x1, y1)
 
-# %% ../../nbs/10a_bbox.core.ipynb 9
+# %% ../../nbs/10a_bbox.core.ipynb 11
 class OBBox(_BBox):
     @classmethod
     def from_clockwise(cls, x,y, w,h, degrees):
@@ -113,8 +118,9 @@ class OBBox(_BBox):
         x4 = x-sinr*h
         y4 = y+cosr*h
         
-        return cls(x,y, x2,y2, x3,y3, x4,y4)
+        return cls.from_flat((x,y, x2,y2, x3,y3, x4,y4))
     
     def __repr__(self):
 #         return f"<{self.__class__.__name__} (x1:{self.x1},y1:{self.y1}, x2:{self.x2},y2:{self.y2}, x3:{self.x3},y3:{self.y3}, x4:{self.x4},y4:{self.y4})>"
-        return f"<{self.__class__.__name__} (({self.x1},{self.y1}), ({self.x2},{self.y2}), ({self.x3},{self.y3}), ({self.x4},{self.y4}))>"
+#         return f"<{self.__class__.__name__} (({self.x1},{self.y1}), ({self.x2},{self.y2}), ({self.x3},{self.y3}), ({self.x4},{self.y4}))>"
+        return f"<{self.__class__.__name__} ({self.points})>"

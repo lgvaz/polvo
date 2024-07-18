@@ -13,7 +13,7 @@ from PIL import Image
 from PIL.ImageDraw import ImageDraw
 from . import BBox, OBBox
 
-# %% ../../nbs/10e_bbox.vis.ipynb 5
+# %% ../../nbs/10e_bbox.vis.ipynb 4
 def overlay(image:PIL.Image, bbox:BBox, color:Tuple[int,int,int]=None):
     """Draws a box on an image with a given color.
     # Arguments
@@ -29,13 +29,13 @@ def overlay(image:PIL.Image, bbox:BBox, color:Tuple[int,int,int]=None):
     for i in range(4): draw.line(xy=(tuple(bbox.points[i]), tuple(bbox.points[(i+1)%4])), fill=color, width=bbox_thickness)
     return image
 
-# %% ../../nbs/10e_bbox.vis.ipynb 6
+# %% ../../nbs/10e_bbox.vis.ipynb 5
 @patch
 @delegates(overlay)
 def show(self:BBox, image, **kwargs):
     return overlay(bbox=self, image=image, **kwargs)
 
-# %% ../../nbs/10e_bbox.vis.ipynb 8
+# %% ../../nbs/10e_bbox.vis.ipynb 7
 @patch
 @delegates(overlay)
 def show(self:OBBox, image, **kwargs):

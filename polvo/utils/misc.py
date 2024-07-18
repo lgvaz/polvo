@@ -23,10 +23,10 @@ def sort_quadrilateral(points):
     ysorted_idxs = np.argsort(points[:, 1])
     top_idxs, bottom_idxs = ysorted_idxs[:2], ysorted_idxs[2:]
     xsorted_top_idxs = top_idxs[np.argsort(points[top_idxs][:, 0])]
-    xsorted_bottom_idxs = bottom_idxs[np.argsort(points[bottom_idxs][:, 0])]
-    # Combine the sorted points in the order: [top-left, top-right, bottom-left, bottom-right]
-    sorted_points = np.vstack((points[xsorted_top_idxs], points[xsorted_bottom_idxs]))
-    sorted_idxs = np.concatenate((xsorted_top_idxs, xsorted_bottom_idxs))
+    xreversesorted_bottom_idxs = bottom_idxs[np.argsort(points[bottom_idxs][:, 0])][::-1]
+    # Combine the sorted points in the order: [top-left, top-right, bottom-right, bottom-left]
+    sorted_points = np.vstack((points[xsorted_top_idxs], points[xreversesorted_bottom_idxs]))
+    sorted_idxs = np.concatenate((xsorted_top_idxs, xreversesorted_bottom_idxs))
     return sorted_points, sorted_idxs
 
 # %% ../../nbs/01t_utils.misc.ipynb 8
