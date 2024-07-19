@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['overlay']
 
-# %% ../../nbs/10e_bbox.vis.ipynb 3
+# %% ../../nbs/10e_bbox.vis.ipynb 4
 from fastcore.all import *
 import PIL
 import numpy as np
@@ -13,7 +13,7 @@ from PIL import Image
 from PIL.ImageDraw import ImageDraw
 from . import BBox, OBBox
 
-# %% ../../nbs/10e_bbox.vis.ipynb 4
+# %% ../../nbs/10e_bbox.vis.ipynb 5
 def overlay(image:PIL.Image, bbox:BBox, color:Tuple[int,int,int]=None):
     """Draws a box on an image with a given color.
     # Arguments
@@ -23,20 +23,8 @@ def overlay(image:PIL.Image, bbox:BBox, color:Tuple[int,int,int]=None):
     """
     draw = PIL.ImageDraw.Draw(image)
     color = color or tuple(((np.random.random(3)*0.6 + 0.4)*255).astype(int))
-    bbox_thickness = int(0.0041*min(image.size) - 0.0058)
+    bbox_thickness = int(0.0081*min(image.size) - 0.0078)
     bbox_thickness = np.clip(bbox_thickness, 1, 16)
     
     for i in range(4): draw.line(xy=(tuple(bbox.points[i]), tuple(bbox.points[(i+1)%4])), fill=color, width=bbox_thickness)
     return image
-
-# %% ../../nbs/10e_bbox.vis.ipynb 5
-@patch
-@delegates(overlay)
-def show(self:BBox, image, **kwargs):
-    return overlay(bbox=self, image=image, **kwargs)
-
-# %% ../../nbs/10e_bbox.vis.ipynb 7
-@patch
-@delegates(overlay)
-def show(self:OBBox, image, **kwargs):
-    return overlay(bbox=self, image=image, **kwargs)

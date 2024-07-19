@@ -2,8 +2,8 @@
 
 # %% auto 0
 __all__ = ['save_txt', 'open_txt', 'open_json', 'save_json', 'save_pickle', 'open_pickle', 'save_dill', 'open_dill', 'mkdir',
-           'extract_files', 'get_files', 'ImageFile', 'get_image_files', 'glob_match', 'open_image', 'open_mask',
-           'save_image', 'RenderDict']
+           'extract_files', 'open_image', 'open_mask', 'save_image', 'get_files', 'ImageFile', 'get_image_files',
+           'glob_match', 'RenderDict']
 
 # %% ../../nbs/01e_utils.io.ipynb 2
 import shutil, tempfile, pickle
@@ -69,6 +69,24 @@ def extract_files(files, extract_to_dir, show_pbar=True):
     return extract_to_dir
 
 # %% ../../nbs/01e_utils.io.ipynb 18
+def open_image(path, gray=False, ignore_exif=True) -> Image.Image:
+    "Open an image from disk `path` as a PIL Image"
+    color = "L" if gray else "RGB"
+    image = Image.open(str(path))
+    if not ignore_exif: image = ImageOps.exif_transpose(image)
+    return image.convert(color)
+
+# %% ../../nbs/01e_utils.io.ipynb 20
+@delegates(open_image)
+def open_mask(path, gray=True, **kwargs) -> Image.Image:
+    return open_image(path, gray=gray, **kwargs)
+
+# %% ../../nbs/01e_utils.io.ipynb 22
+def save_image(image, path):
+    if isinstance(image, np.ndarray): image = Image.fromarray(image)
+    return image.save(str(path))
+
+# %% ../../nbs/01e_utils.io.ipynb 24
 def _get_files(p, fs, extensions=None):
     "COPIED FROM https://github.com/fastai/fastai/blob/master/nbs/05_data.transforms.ipynb"
     p = Path(p)
@@ -76,7 +94,7 @@ def _get_files(p, fs, extensions=None):
            and ((not extensions) or f'.{f.split(".")[-1].lower()}' in extensions)]
     return res
 
-# %% ../../nbs/01e_utils.io.ipynb 19
+# %% ../../nbs/01e_utils.io.ipynb 25
 def get_files(path, extensions=None, recurse=True, folders=None, followlinks=True):
     """Get all the files in `path` with optional `extensions`, optionally with `recurse`, only in `folders`, if specified.
     COPIED FROM https://github.com/fastai/fastai/blob/master/nbs/05_data.transforms.ipynb
@@ -97,14 +115,18 @@ def get_files(path, extensions=None, recurse=True, folders=None, followlinks=Tru
         res = _get_files(path, f, extensions)
     return L(res)
 
-# %% ../../nbs/01e_utils.io.ipynb 21
+# %% ../../nbs/01e_utils.io.ipynb 27
 class ImageFile(type(Path()), metaclass=BypassNewMeta):
     _bypass_type=type(Path())
     _extensions = set(k for k,v in mimetypes.types_map.items() if v.startswith('image/'))
     def __new__(cls, *pathsegments):
         return super().__new__(cls, *pathsegments)
+    
+    @delegates(open_image)
+    def open(self, **kwargs): return open_image(self, **kwargs)
+    def draw(self, drawer): return drawer.open_image(self)
 
-# %% ../../nbs/01e_utils.io.ipynb 24
+# %% ../../nbs/01e_utils.io.ipynb 30
 def get_image_files(path, recurse=True, folders=None):
     """Get image files in `path` recursively, only in `folders`, if specified.
     COPIED FROM https://github.com/fastai/fastai/blob/master/nbs/05_data.transforms.ipynb
@@ -112,35 +134,12 @@ def get_image_files(path, recurse=True, folders=None):
     files = get_files(path, extensions=ImageFile._extensions, recurse=recurse, folders=folders)
     return [ImageFile(str(f)) for f in files]
 
-# %% ../../nbs/01e_utils.io.ipynb 27
+# %% ../../nbs/01e_utils.io.ipynb 32
 def glob_match(dirpath, matches: Sequence[str], recursive=True):
     glob = Path.rglob if recursive else Path.glob
     return [f for match in matches for f in glob(Path(dirpath), match)]
 
-# %% ../../nbs/01e_utils.io.ipynb 30
-def open_image(path, gray=False, ignore_exif=True) -> Image.Image:
-    "Open an image from disk `path` as a PIL Image"
-    color = "L" if gray else "RGB"
-    image = Image.open(str(path))
-    if not ignore_exif: image = ImageOps.exif_transpose(image)
-    return image.convert(color)
-
-# %% ../../nbs/01e_utils.io.ipynb 32
-@patch
-@delegates(open_image)
-def show(self:ImageFile, **kwargs): return open_image(self, **kwargs)
-
-# %% ../../nbs/01e_utils.io.ipynb 34
-@delegates(open_image)
-def open_mask(path, gray=True, **kwargs) -> Image.Image:
-    return open_image(path, gray=gray, **kwargs)
-
-# %% ../../nbs/01e_utils.io.ipynb 36
-def save_image(image, path):
-    if isinstance(image, np.ndarray): image = Image.fromarray(image)
-    return image.save(str(path))
-
-# %% ../../nbs/01e_utils.io.ipynb 38
+# %% ../../nbs/01e_utils.io.ipynb 35
 class RenderDict:
     "From https://www.reddit.com/r/IPython/comments/34t4m7/lpt_print_json_in_collapsible_format_in_ipython/"
     def __init__(self, json_data):

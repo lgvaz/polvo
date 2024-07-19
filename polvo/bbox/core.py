@@ -15,6 +15,8 @@ class _BBox:
         self.points, _ = pv.sort_quadrilateral(np.array(points))
         
     def normalized_points(self, w, h): return self.points / np.array((w, h))
+    
+    def draw(self, drawer): return drawer.overlay_bbox(self)
 
     @classmethod
     def from_points(cls, points): return cls(points)
