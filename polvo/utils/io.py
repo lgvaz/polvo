@@ -125,6 +125,7 @@ class ImageFile(type(Path()), metaclass=BypassNewMeta):
     @delegates(open_image)
     def open(self, **kwargs): return open_image(self, **kwargs)
     def draw(self, drawer): return drawer.open_image(self)
+    def accept_visit(self, visitor): return visitor.visit_image_file(self)
 
 # %% ../../nbs/01e_utils.io.ipynb 30
 def get_image_files(path, recurse=True, folders=None):
