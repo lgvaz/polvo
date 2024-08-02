@@ -23,7 +23,7 @@ def show_image(image, ax=None, cmap=None, show:bool=False, **kwargs):
     if show: plt.show()
     return ax
 
-# %% ../../nbs/01p_utils.visualization.ipynb 9
+# %% ../../nbs/01p_utils.visualization.ipynb 8
 @delegates(Grid)
 def get_grid(
     nitems=None,
@@ -43,25 +43,25 @@ def get_grid(
     
     return fig, grid
 
-# %% ../../nbs/01p_utils.visualization.ipynb 10
+# %% ../../nbs/01p_utils.visualization.ipynb 9
 @delegates(get_grid)
 def get_image_grid(nitems=None, ncols=3, nrows=None, pad=0.0, **kwargs):
     "Creates axes optimized for displaying images."
     return get_grid(nitems=nitems, ncols=ncols, nrows=nrows, pad=pad, grid_class=ImageGrid)
 
-# %% ../../nbs/01p_utils.visualization.ipynb 11
+# %% ../../nbs/01p_utils.visualization.ipynb 10
 def show_grid(grid, shows, show=True):
     for ax, show in zip(grid, shows): show(ax=ax)
     if show: plt.show()
 
-# %% ../../nbs/01p_utils.visualization.ipynb 12
+# %% ../../nbs/01p_utils.visualization.ipynb 11
 def normalize_axes(grid, xmax, ymax):
     "Expand all axes to have the same dimensions."
     for ax in grid:
         ax.set_xlim(right=xmax)
         ax.set_ylim(bottom=ymax)
 
-# %% ../../nbs/01p_utils.visualization.ipynb 13
+# %% ../../nbs/01p_utils.visualization.ipynb 12
 @delegates(get_image_grid, but=['nitems'])
 def plot_grid(shows, show=True, xmax=None, ymax=None, **kwargs):
     "Quickly plot a grid of images."
@@ -70,13 +70,13 @@ def plot_grid(shows, show=True, xmax=None, ymax=None, **kwargs):
     show_grid(grid, shows, show=show)
     return fig, grid
 
-# %% ../../nbs/01p_utils.visualization.ipynb 14
+# %% ../../nbs/01p_utils.visualization.ipynb 13
 @delegates(plot_grid, but=['shows'])
 def image_grid(images, *args, **kwargs):
     shows = [partial(show_image, o) for o in images]
     return plot_grid(shows, *args, **kwargs)
 
-# %% ../../nbs/01p_utils.visualization.ipynb 16
+# %% ../../nbs/01p_utils.visualization.ipynb 15
 @delegates(image_grid)
 def grid_from_sequence(sequence, get_image, nitems=9, idxs=None, **kwargs):
     "Generates a grid of images from a subset of items from the sequence."
@@ -88,12 +88,12 @@ def grid_from_sequence(sequence, get_image, nitems=9, idxs=None, **kwargs):
     
     return image_grid(images, **kwargs)
 
-# %% ../../nbs/01p_utils.visualization.ipynb 18
+# %% ../../nbs/01p_utils.visualization.ipynb 17
 def image_size(image_file):
     with pv.open_image(image_file) as image:
         return image.size
 
-# %% ../../nbs/01p_utils.visualization.ipynb 19
+# %% ../../nbs/01p_utils.visualization.ipynb 18
 def image_sizes_hist(
     image_files # Sequence of image filepaths.
 ):

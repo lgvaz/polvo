@@ -80,20 +80,18 @@ class YOLO(pv.Visitor):
         yolo_yaml = self.yolo_yaml(classes, save_dir, **dirs)
         pv.save_txt(yolo_yaml, save_dir/'dataset.yaml')
         
-    def convert_records(self, save_dir, records):
+    def convert_records(self, save_dir, records, n_workers=defaults.cpus):
         image_dir = pv.mkdir(Path(save_dir)/'images')
         ann_dir = pv.mkdir(Path(save_dir)/'labels')
+        parallel(pv.partial(self.convert_record, image_dir=image_dir, ann_dir=ann_dir),
+                 records, progress=pv.pbar, n_workers=n_workers)
         
-        for record in pv.pbar(records):
-            lines = self._convert(record)
-            pv.save_txt('\n'.join(lines), ann_dir/self._image_file.with_suffix('.txt').name)
-            shutil.copy(self._image_file.absolute(), image_dir/self._image_file.name)
-        
-    def _convert(self, record):
+    def convert_record(self, record, image_dir, ann_dir):
         self._labels, self._bboxes = [], []
         self.visit_all(record)
         lines = [' '.join(o) for o in pv.safe_zip(self._labels, self._bboxes)]
-        return lines
+        pv.save_txt('\n'.join(lines), ann_dir/self._image_file.with_suffix('.txt').name)
+        shutil.copy(self._image_file.absolute(), image_dir/self._image_file.name)
         
     def yolo_yaml(self, class_map, save_dir, train_dir=None, valid_dir=None, test_dir=None):
         classes = '\n'.join([f'  {k}: {v}' for k,v in class_map.items()])
