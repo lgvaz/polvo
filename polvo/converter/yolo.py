@@ -17,15 +17,17 @@ class YOLO(pv.Visitor):
         if test_records: self.convert_records(pv.mkdir(save_dir/'test'), test_records)
         
     def convert_records(self, save_dir, records):
-        for record in records: self.convert_record(save_dir, record)
+        for record in pv.pbar(records): self.convert_record(save_dir, record)
         
     def convert_record(self, save_dir, record):
-        save_dir = Path(save_dir)
+        image_dir = pv.mkdir(Path(save_dir)/'images')
+        ann_dir = pv.mkdir(Path(save_dir)/'labels')
+        
         self._labels, self._bboxes = [], []
         self.visit_all(record)
         lines = [' '.join(o) for o in pv.safe_zip(self._labels, self._bboxes)]
-        pv.save_txt('\n'.join(lines), save_dir/self._image_file.with_suffix('.txt').name)
-        shutil.copy(self._image_file.absolute(), save_dir/self._image_file.name)
+        pv.save_txt('\n'.join(lines), ann_dir/self._image_file.with_suffix('.txt').name)
+        shutil.copy(self._image_file.absolute(), image_dir/self._image_file.name)
     
     def _visit_image_file(self, image_file): 
         self._w,self._h = pv.image_size(image_file)
