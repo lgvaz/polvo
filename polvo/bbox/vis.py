@@ -37,9 +37,12 @@ def overlay_label(image, label, x, y, color=None, font=None, padding=0):
     color = color or _random_color()
     font = font or ImageFont.load_default()
     draw = PIL.ImageDraw.Draw(image)
-    # Calculate text size
-    x1,y1, x2,y2 = font.getbbox(label)
-    text_width, text_height = x2-x1, y2-y1
+    # Calculate text size (try/except because font.getsize was deprecated in PIL)
+    try:
+        x1,y1, x2,y2 = font.getbbox(label)
+        text_width, text_height = x2-x1, y2-y1
+    except AttributeError:
+        text_width, text_height = font.getsize(label)
 
     # Calculate box coordinates with padding
     if (y - text_height - padding) > 0:
