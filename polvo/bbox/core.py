@@ -127,16 +127,19 @@ class OBBox(_BBox):
     
     def accept_visit(self, visitor): return visitor.visit_bbox(self)
     
+    # TODO: when angle conversion is implemented, use it here
     def __repr__(self): return f"<{self.__class__.__name__} ({self.points})>"
 
 # %% ../../nbs/10a_bbox.core.ipynb 14
-class BBoxLabeled(GetAttr):
+class _BBoxLabeled(GetAttr):
     _default='bbox'
     def __init__(self, bbox, label): store_attr()
-    def accept_visit(self, visitor): return visitor.visit_bbox_labelled(self)
+    def __repr__(self): return f'{self.label} | {self.bbox}'
 
 # %% ../../nbs/10a_bbox.core.ipynb 15
-class OBBoxLabeled(GetAttr):
-    _default='bbox'
-    def __init__(self, bbox, label): store_attr()
+class BBoxLabeled(_BBoxLabeled):
+    def accept_visit(self, visitor): return visitor.visit_bbox_labelled(self)
+
+# %% ../../nbs/10a_bbox.core.ipynb 17
+class OBBoxLabeled(_BBoxLabeled):
     def accept_visit(self, visitor): return visitor.visit_obbox_labelled(self)
