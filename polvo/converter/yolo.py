@@ -95,7 +95,7 @@ class YOLO(pv.Visitor):
         lines = [' '.join(o) for o in pv.safe_zip(self._labels, self._bboxes)]
         return lines
         
-    def yolo_yaml(self, classes, save_dir, train_dir=None, valid_dir=None, test_dir=None):
+    def yolo_yaml(self, class_map, save_dir, train_dir=None, valid_dir=None, test_dir=None):
         classes = '\n'.join([f'  {k}: {v}' for k,v in class_map.items()])
         train_str = f"train: {train_dir.relative_to(save_dir)}\n" if train_dir is not None else ""
         valid_str = f"val: {valid_dir.relative_to(save_dir)}\n" if valid_dir is not None else ""
