@@ -62,4 +62,4 @@ def overlay_bbox_labelled(image, bbox, color=None, **kwargs):
     color = color or _random_color()
     image = overlay(image, bbox, color=color)
     x,y = bbox.xyxyxyxy[0]
-    return overlay_label(image, bbox.label, x,y, color=color, **kwargs)
+    return overlay_label(image, bbox.label.name, x,y, color=color, **kwargs)
