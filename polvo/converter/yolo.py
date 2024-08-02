@@ -10,11 +10,21 @@ import polvo as pv
 
 # %% ../../nbs/25f_converter.yolo.ipynb 4
 class YOLO(pv.Visitor):
-    def convert_dataset(self, save_dir, train_records=None, valid_records=None, test_records=None):
+    def convert_dataset(self, save_dir, classes, train_records=None, valid_records=None, test_records=None):
         save_dir = Path(save_dir)
-        if train_records: self.convert_records(pv.mkdir(save_dir/'train'), train_records)
-        if valid_records: self.convert_records(pv.mkdir(save_dir/'valid'), valid_records)
-        if test_records: self.convert_records(pv.mkdir(save_dir/'test'), test_records)
+        dirs = {}
+        if train_records: 
+            train_dir = dirs['train_dir'] = pv.mkdir(save_dir/'train')
+            self.convert_records(train_dir, train_records)
+        if valid_records:
+            valid_dir = dirs['valid_dir'] = pv.mkdir(save_dir/'valid')
+            self.convert_records(valid, valid_records)
+        if test_records: 
+            test_dir = dirs['test_dir'] = pv.mkdir(save_dir/'test')
+            self.convert_records(test_dir, test_records)
+            
+        yolo_yaml = self.yolo_yaml(classes, save_dir, **dirs)
+        pv.save_txt(yolo_yaml, save_dir/'dataset.yaml')
         
     def convert_records(self, save_dir, records):
         for record in pv.pbar(records): self.convert_record(save_dir, record)
@@ -28,6 +38,20 @@ class YOLO(pv.Visitor):
         lines = [' '.join(o) for o in pv.safe_zip(self._labels, self._bboxes)]
         pv.save_txt('\n'.join(lines), ann_dir/self._image_file.with_suffix('.txt').name)
         shutil.copy(self._image_file.absolute(), image_dir/self._image_file.name)
+        
+    def yolo_yaml(self, classes, save_dir, train_dir=None, valid_dir=None, test_dir=None):
+        classes = '\n'.join([f'  {k}: {v}' for k,v in class_map.items()])
+        train_str = f"train: {train_dir.relative_to(save_dir)}\n" if train_dir is not None else ""
+        valid_str = f"val: {valid_dir.relative_to(save_dir)}\n" if valid_dir is not None else ""
+        test_str = f"test: {test_dir.relative_to(save_dir)}\n" if test_dir is not None else ""
+        return (
+            f"path: {save_dir.absolute()}\n"
+            f"{train_str}"
+            f"{valid_str}"
+            f"{test_str}"
+            f"names:\n"
+            f"{classes}"
+        )
     
     def _visit_image_file(self, image_file): 
         self._w,self._h = pv.image_size(image_file)
