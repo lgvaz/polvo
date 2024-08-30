@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['flatten', 'sort_quadrilateral', 'kwargs_grid', 'safe_zip', 'skip_error', 'Cache', 'transparent_cmap', 'partial',
-           'random_local_seed', 'random_split']
+           'random_local_seed']
 
 # %% ../../nbs/01t_utils.misc.ipynb 2
 from fastcore.all import *
@@ -113,18 +113,3 @@ def random_local_seed(seed):
     random.seed(seed)
     try: yield
     finally: random.setstate(state)
-
-# %% ../../nbs/01t_utils.misc.ipynb 25
-def random_split(items, probs, seed=None):
-    # Calculate split indexes
-    n = len(items)
-    p = [int(round(prob * n)) for prob in probs]  # convert percentage to absolute and round
-    p[p.index(max(p))] += n - sum(p)  # adjusts the largest split to ensure the total sum matches the length of items
-    # Shuffle items with the given seed
-    with random_local_seed(seed):
-        shuffled = items[:]
-        random.shuffle(shuffled)
-    # Create cumulative split indexes and perform the split
-    split_points = [sum(p[:i+1]) for i in range(len(p))]
-    splits = [shuffled[start:end] for start, end in zip([0] + split_points[:-1], split_points)]
-    return splits
