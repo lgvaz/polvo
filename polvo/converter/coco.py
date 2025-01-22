@@ -5,6 +5,7 @@ __all__ = ['COCO']
 
 # %% ../../nbs/25h_converter.coco.ipynb 3
 from fastcore.all import *
+import cv2
 import shutil
 import numpy as np
 import polvo as pv
@@ -32,15 +33,12 @@ class COCO(pv.Visitor):
 #                  records, progress=pv.pbar, n_workers=n_workers)
 
         
-    def dataset_json(self, records, dataset_class_map, model_class_map=None):
+    def dataset_json(self, records, dataset_class_map):
         self._dataset_class_map = dataset_class_map
-        self._model_class_map = model_class_map or class_map
         self._json = self._initial_json()
         self._add_categories(dataset_class_map)
         for record in records: self.record_json(record)
         return self._json
-    
-    def _category_id(self, i): return self._dataset_class_map.name2id[self._model_class_map.id2name[i]]
     
     def _add_categories(self, class_map):
         for i, name in class_map.id2name.items(): 
@@ -48,15 +46,11 @@ class COCO(pv.Visitor):
         
     def record_json(self, record):
         self._labels, self._bboxes = [], []
-        
         self.visit_all(record)
-        
-#         for label, bbox in pv.safe_zip(self._labels, self._bboxes):
         
     def _visit_image_file(self, image_file): 
         self._w,self._h = pv.image_size(image_file)
         self._image_file = image_file
-        
         self._image_id = len(self._json['images'])+1
         self._json['images'].append({
             'id': self._image_id,
@@ -71,10 +65,10 @@ class COCO(pv.Visitor):
         self._json['annotations'].append({
             'id': annotation_id,
             'image_id': self._image_id,
-            'category_id': self._category_id(bbox.label.id),
+            'category_id': self._dataset_class_map.name2id[bbox.label.name],
             'bbox': bbox.xyxy.astype(int).tolist(),
             'area': int(bbox.area),
-            'segmentation': [obbox.flat.astype(int).tolist()],
+            'segmentation': [bbox.flat.astype(int).tolist()],
             'iscrowd': 0
         })
 
@@ -83,9 +77,40 @@ class COCO(pv.Visitor):
         self._json['annotations'].append({
             'id': annotation_id,
             'image_id': self._image_id,
-            'category_id': self._category_id(obbox.label.id),
+            'category_id': self._dataset_class_map.name2id[obbox.label.name],
             'bbox': obbox.xyxy.astype(int).tolist(),
             'area': int(obbox.area),
             'segmentation': [obbox.flat.astype(int).tolist()],
             'iscrowd': 0
         })
+        
+    def _visit_segmask(self, segmask):
+        contours = segmask.to_contours()
+        for label, contour in contours.items():
+            for c in contour:
+                dataset_catid = self._dataset_class_map.name2id[label]
+                self._json['annotations'].append(self._contour_to_annotation(c, dataset_catid))
+
+    def _contour_to_annotation(self, contour, category_id):
+        assert contour.shape[1] == 1 #i'm not sure i can just ignore the 2nd dim
+        contour = contour[:, 0, :]
+        # segmentation
+        polygon = contour.ravel().tolist()
+        # bbox
+        xmax, ymax = contour.max(axis=0).tolist()
+        xmin, ymin = contour.min(axis=0).tolist()
+        bbox = [xmin, ymin, xmax - xmin, ymax - ymin]
+
+        annotation_id = len(self._json['annotations'])
+        return {
+            'id': annotation_id,
+            'image_id': self._image_id,
+            "category_id": category_id,
+            "segmentation": [polygon],
+            "bbox": bbox,
+            "iscrowd": 0,
+        }
+
+# %% ../../nbs/25h_converter.coco.ipynb 10
+# temporary
+import cv2
