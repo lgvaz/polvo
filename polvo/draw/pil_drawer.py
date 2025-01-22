@@ -18,3 +18,5 @@ class PILDrawer(pv.Visitor):
     def _visit_image_file(self, image_file, **kwargs): self._image = image_file.open(**kwargs)
     def _visit_bbox(self, bbox, **kwargs): self._image = pb.overlay(bbox=bbox, image=self._image, **kwargs)
     def _visit_bbox_labelled(self, bbox, **kwargs): self._image = pb.overlay_bbox_labelled(bbox=bbox, image=self._image, **kwargs)
+    def _visit_obbox(self, obbox, **kwargs): return self._visit_bbox(obbox, **kwargs)
+    def _visit_obbox_labelled(self, obbox, **kwargs): return self._visit_bbox_labelled(obbox, **kwargs)

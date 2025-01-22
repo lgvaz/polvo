@@ -16,9 +16,33 @@ class _BBox:
         
     def normalized_points(self, w, h): return self.points / np.array((w, h))
     
-
     @property
     def xyxyxyxy(self): return self.points
+    @property
+    def flat(self): return self.points.flatten()
+    @property
+    def xmin(self): return self.points[:, 0].min()
+    @property
+    def xmax(self): return self.points[:, 0].max()
+    @property
+    def ymin(self): return self.points[:, 1].min()
+    @property
+    def ymax(self): return self.points[:, 1].max()
+    @property
+    def width(self): return self.xmax-self.xmin
+    @property
+    def height(self): return self.ymax-self.ymin
+    @property
+    def area(self): return self.width*self.height
+    @property
+    def xyxy(self): return np.array((self.xmin, self.ymin, self.xmax, self.ymax))
+    @property
+    def yxyx(self): return np.array((self.ymin, self.xmin, self.ymax, self.xmax))
+    @property
+    def xywh(self): return np.array((self.xmin, self.ymin, self.width, self.height))
+    @property
+    def xycenter_wh(self): return np.array((self.xmin+self.width/2, self.ymin+self.height/2, self.width, self.height))
+        
     @classmethod
     def from_points(cls, points): return cls(points)
     @classmethod
@@ -45,28 +69,6 @@ class BBox(_BBox):
         return False
     
     def accept_visit(self, visitor): return visitor.visit_bbox(self)
-    
-    @property
-    def xmin(self): return self.points[:, 0].min()
-    @property
-    def xmax(self): return self.points[:, 0].max()
-    @property
-    def ymin(self): return self.points[:, 1].min()
-    @property
-    def ymax(self): return self.points[:, 1].max()
-
-    @property
-    def width(self): return self.xmax-self.xmin
-    @property
-    def height(self): return self.ymax-self.ymin
-    @property
-    def area(self): return self.width*self.height
-    @property
-    def xyxy(self): return self.xmin, self.ymin, self.xmax, self.ymax
-    @property
-    def yxyx(self): return self.ymin, self.xmin, self.ymax, self.xmax
-    @property
-    def xywh(self): return self.xmin, self.ymin, self.width, self.height
 
     def relative_xcycwh(self, img_width: int, img_height: int):
         scale = np.array([img_width, img_height, img_width, img_height])
@@ -74,11 +76,18 @@ class BBox(_BBox):
         xc = x + 0.5*w
         yc = y + 0.5*h
         return (xc, yc, w, h)
+    
+    def normalized_xycenter_wh(self, img_width: int, img_height: int):
+        scale = np.array([img_width, img_height, img_width, img_height])
+        return self.xycenter_wh / scale
 
+    @classmethod
+    def from_xyxy(cls, xmin, ymin, xmax, ymax): return cls.from_flat((xmin,ymin, xmax,ymin, xmax,ymax, xmin,ymax))
     @classmethod
     def from_xywh(cls, x, y, w, h): return cls.from_xyxy(x, y, x+w, y+h)
     @classmethod
-    def from_xyxy(cls, xmin, ymin, xmax, ymax): return cls.from_flat((xmin,ymin, xmax,ymin, xmax,ymax, xmin,ymax))
+    def from_xycenter_wh(cls, xc, yc, w, h):
+        return cls.from_xywh(xc-w/2, yc-h/2, w, h)
     @classmethod
     def from_relative_xcycwh(cls, xc, yc, bw, bh, img_width, img_height):
         # subtracting 0.5 goes from center to left/upper edge, adding goes to right/bottom
@@ -110,7 +119,7 @@ class BBox(_BBox):
             raise ValueError(f"invalid RLE or image dimensions: x1={x1} > shape[1]={w}")
         return cls.from_xyxy(x0, y0, x1, y1)
 
-# %% ../../nbs/10a_bbox.core.ipynb 11
+# %% ../../nbs/10a_bbox.core.ipynb 12
 class OBBox(_BBox):
     @classmethod
     def from_clockwise(cls, x,y, w,h, degrees):
@@ -125,21 +134,21 @@ class OBBox(_BBox):
         
         return cls.from_flat((x,y, x2,y2, x3,y3, x4,y4))
     
-    def accept_visit(self, visitor): return visitor.visit_bbox(self)
+    def accept_visit(self, visitor): return visitor.visit_obbox(self)
     
     # TODO: when angle conversion is implemented, use it here
     def __repr__(self): return f"<{self.__class__.__name__} ({self.points})>"
 
-# %% ../../nbs/10a_bbox.core.ipynb 14
+# %% ../../nbs/10a_bbox.core.ipynb 15
 class _BBoxLabeled(GetAttr):
     _default='bbox'
     def __init__(self, bbox, label): store_attr()
     def __repr__(self): return f'{self.label} | {self.bbox}'
 
-# %% ../../nbs/10a_bbox.core.ipynb 15
+# %% ../../nbs/10a_bbox.core.ipynb 16
 class BBoxLabeled(_BBoxLabeled):
     def accept_visit(self, visitor): return visitor.visit_bbox_labelled(self)
 
-# %% ../../nbs/10a_bbox.core.ipynb 17
+# %% ../../nbs/10a_bbox.core.ipynb 18
 class OBBoxLabeled(_BBoxLabeled):
     def accept_visit(self, visitor): return visitor.visit_obbox_labelled(self)

@@ -33,9 +33,15 @@ def overlay(image:PIL.Image, bbox:BBox, color:Tuple[int,int,int]=None):
     return image
 
 # %% ../../nbs/10e_bbox.vis.ipynb 10
-def overlay_label(image, label, x, y, color=None, font=None, padding=0):
+def _default_font(scale=1.0):
+    return ImageFont.truetype("DejaVuSans.ttf", size=int(10*scale))  # Generic sans-serif
+#     except IOError: return ImageFont.load_default() 
+
+# %% ../../nbs/10e_bbox.vis.ipynb 11
+def overlay_label(image, label, x, y, color=None, text_scale=1.0, font=None, padding=0):
     color = color or _random_color()
-    font = font or ImageFont.load_default()
+#     font = font or ImageFont.load_default()
+    font = font or _default_font(text_scale)
     draw = PIL.ImageDraw.Draw(image)
     # Calculate text size (try/except because font.getsize was deprecated in PIL)
     try:
@@ -43,7 +49,7 @@ def overlay_label(image, label, x, y, color=None, font=None, padding=0):
         text_width, text_height = x2-x1, y2-y1
     except AttributeError:
         text_width, text_height = font.getsize(label)
-
+        
     # Calculate box coordinates with padding
     if (y - text_height - padding) > 0:
         box_pt1, box_pt2 = (x, y+padding), (x+text_width+padding, y-text_height-padding)
@@ -56,7 +62,7 @@ def overlay_label(image, label, x, y, color=None, font=None, padding=0):
     draw.text(label_pt, label, font=font, fill=(240, 240, 240))
     return image
 
-# %% ../../nbs/10e_bbox.vis.ipynb 12
+# %% ../../nbs/10e_bbox.vis.ipynb 13
 @delegates(overlay_label)
 def overlay_bbox_labelled(image, bbox, color=None, **kwargs):
     color = color or _random_color()

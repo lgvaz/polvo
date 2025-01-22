@@ -11,6 +11,10 @@ class Visitor:
     def _visit_image_file(self, image_file, **kwargs): raise NotImplementedError
     def _visit_bbox(self, bbox, **kwargs): raise NotImplementedError
     def _visit_bbox_labelled(self, bbox, **kwargs): raise NotImplementedError
+    def _visit_obbox(self, bbox, **kwargs): raise NotImplementedError
+    def _visit_obbox_labelled(self, obbox, **kwargs): raise NotImplementedError
+    def _visit_keypoints(self, keypoints, **kwargs): raise NotImplementedError
+    def _visit_segmask(self, segmask, **kwargs): raise NotImplementedError
         
     # separating the drawing functions from its call allows us to pass custom arguments to each item
     def collect_accept_fns(self, record):
@@ -27,3 +31,7 @@ class Visitor:
     def visit_image_file(self, image_file, **kwargs): return partial(self._visit_image_file, image_file, **kwargs)
     def visit_bbox(self, bbox, **kwargs): return partial(self._visit_bbox, bbox, **kwargs)
     def visit_bbox_labelled(self, bbox, **kwargs): return partial(self._visit_bbox_labelled, bbox, **kwargs)
+    def visit_obbox(self, bbox, **kwargs): return partial(self._visit_obbox, bbox, **kwargs)
+    def visit_obbox_labelled(self, bbox, **kwargs): return partial(self._visit_obbox_labelled, bbox, **kwargs)
+    def visit_keypoints(self, keypoints, **kwargs): return partial(self._visit_keypoints, keypoints, **kwargs)
+    def visit_segmask(self, segmax, **kwargs): return partial(self._visit_segmask, segmax, **kwargs)

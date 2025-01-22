@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['flatten', 'sort_quadrilateral', 'kwargs_grid', 'safe_zip', 'skip_error', 'Cache', 'transparent_cmap', 'partial',
-           'random_local_seed']
+           'random_local_seed', 'random_color']
 
 # %% ../../nbs/01t_utils.misc.ipynb 2
 from fastcore.all import *
@@ -113,3 +113,6 @@ def random_local_seed(seed):
     random.seed(seed)
     try: yield
     finally: random.setstate(state)
+
+# %% ../../nbs/01t_utils.misc.ipynb 25
+def random_color(): return tuple(((np.random.random(3)*0.6 + 0.4)*255).astype(int))

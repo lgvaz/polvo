@@ -1,4 +1,4 @@
-__version__ = "0.1.12"
+__version__ = "0.2.0"
 
 import polvo.test
 
@@ -11,5 +11,6 @@ import polvo.datasets
 import polvo.classification
 import polvo.segmentation
 import polvo.bbox
+import polvo.keypoint
+import polvo.segmask
 import polvo.converter
-
