@@ -24,4 +24,5 @@ class ClassMap:
         self.id2name = {l.id: l.name for l in labels}
         self.name2id = {l.name: l.id for l in labels}
         
+    def __len__(self): return len(self.labels)
     def __repr__(self): return f'<{self.__class__.__name__} {self.name2id}>'
