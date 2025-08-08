@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['save_txt', 'open_txt', 'open_json', 'save_json', 'save_pickle', 'open_pickle', 'save_dill', 'open_dill', 'mkdir',
            'extract_files', 'open_image', 'open_mask', 'save_image', 'get_files', 'ImageFile', 'get_image_files',
-           'glob_match', 'RenderDict']
+           'glob_match', 'ImageArr', 'ImagePIL', 'RenderDict']
 
 # %% ../../nbs/01e_utils.io.ipynb 2
 import shutil, tempfile, pickle
@@ -141,6 +141,18 @@ def glob_match(dirpath, matches: Sequence[str], recursive=True):
     return [f for match in matches for f in glob(Path(dirpath), match)]
 
 # %% ../../nbs/01e_utils.io.ipynb 35
+class ImageArr:
+    def __init__(self, image): self.image = image
+    def draw(self, drawer): return Image.fromarray(self.image)
+    def accept_visit(self, visitor): return visitor.visit_image_arr(self)
+
+# %% ../../nbs/01e_utils.io.ipynb 36
+class ImagePIL:
+    def __init__(self, image): self.image = image
+    def draw(self, drawer): return self.image
+    def accept_visit(self, visitor): return visitor.visit_image_pil(self)
+
+# %% ../../nbs/01e_utils.io.ipynb 38
 class RenderDict:
     "From https://www.reddit.com/r/IPython/comments/34t4m7/lpt_print_json_in_collapsible_format_in_ipython/"
     def __init__(self, json_data):

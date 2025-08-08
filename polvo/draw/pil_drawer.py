@@ -16,7 +16,10 @@ class PILDrawer(pv.Visitor):
         return self._image
     
     def _visit_image_file(self, image_file, **kwargs): self._image = image_file.open(**kwargs)
+    def _visit_image_pil(self, image_pil, **kwargs): self._image = image_pil.draw(drawer)
+    def _visit_image_arr(self, image_arr, **kwargs): self._image = image_arr.draw(drawer)
     def _visit_bbox(self, bbox, **kwargs): self._image = pb.overlay(bbox=bbox, image=self._image, **kwargs)
     def _visit_bbox_labelled(self, bbox, **kwargs): self._image = pb.overlay_bbox_labelled(bbox=bbox, image=self._image, **kwargs)
     def _visit_obbox(self, obbox, **kwargs): return self._visit_bbox(obbox, **kwargs)
     def _visit_obbox_labelled(self, obbox, **kwargs): return self._visit_bbox_labelled(obbox, **kwargs)
+    def _visit_metadata(self, metadata, **kwargs): pass
