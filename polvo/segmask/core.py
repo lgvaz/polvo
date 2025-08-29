@@ -51,7 +51,7 @@ class SegMask:
             contours[label] = cv2.findContours(mask, mode, method)[0]
         return contours
     
-    def to_polygons(self):
+    def to_polygons(self, method=cv2.CHAIN_APPROX_SIMPLE, mode=cv2.RETR_EXTERNAL):
         arr = self.mask.squeeze().astype(np.uint8)
         polygons = []
         for id_ in set(np.unique(arr)):
