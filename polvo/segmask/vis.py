@@ -32,12 +32,17 @@ import matplotlib as mpl
 #     return PIL.Image.blend(image, PIL.Image.fromarray(colored_mask), alpha)
 
 # %% ../../nbs/14g_segmask.vis.ipynb 5
+def _class2color(class_idx: int, cmap:mpl.colors.Colormap=mpl.colormaps['gist_ncar']):
+    phi_conj = (np.sqrt(5) - 1) / 2
+    val = (class_idx * phi_conj) % 1.0
+    return np.array(cmap(val)[:3]) * 255
+
+# %% ../../nbs/14g_segmask.vis.ipynb 6
 def overlay_array(
     image:PIL.Image,
     mask:Union[PIL.Image.Image, np.ndarray],
-    nclasses:int,
     ignore_idxs:Sequence=None,
-    cmap:mpl.colors.Colormap=mpl.colormaps['gist_ncar'],
+    class2color=_class2color,
     alpha:float=0.5,
 ):
     mask = np.asarray(mask)
@@ -48,19 +53,19 @@ def overlay_array(
     for class_idx in np.unique(mask):
         if class_idx in ignore_idxs: continue
         mask_idxs = mask == class_idx
-        colored_mask[mask_idxs] = np.array(cmap(class_idx/nclasses)[:3]) * 255
+        colored_mask[mask_idxs] = class2color(class_idx)
 
     return PIL.Image.blend(image, PIL.Image.fromarray(colored_mask), alpha)
 
-# %% ../../nbs/14g_segmask.vis.ipynb 7
+# %% ../../nbs/14g_segmask.vis.ipynb 8
 def overlay(
     image:PIL.Image,
     mask:ps.SegMask,
     fill_background:bool=True,
     ignore_idxs=None,
-    cmap:mpl.colors.Colormap=mpl.colormaps['gist_ncar'],
+    class2color=_class2color,
     alpha:float=0.5,
 ):
     ignore_idxs = ignore_idxs or []
     if not fill_background: ignore_idxs.append(mask.class_map.name2id['background'])
-    return overlay_array(image=image, mask=mask.mask, nclasses=len(mask.class_map), ignore_idxs=ignore_idxs, cmap=cmap, alpha=alpha)
+    return overlay_array(image=image, mask=mask.mask, ignore_idxs=ignore_idxs, class2color=class2color, alpha=alpha)
