@@ -40,29 +40,32 @@ def _default_font(scale=1.0):
 # %% ../../nbs/10e_bbox.vis.ipynb 11
 def overlay_label(image, label, x, y, color=None, text_scale=1.0, font=None, padding=0):
     color = color or _random_color()
-#     font = font or ImageFont.load_default()
     font = font or _default_font(text_scale)
     draw = PIL.ImageDraw.Draw(image)
+
     # Calculate text size (try/except because font.getsize was deprecated in PIL)
     try:
-        x1,y1, x2,y2 = font.getbbox(label)
-        text_width, text_height = x2-x1, y2-y1
+        x1, y1, x2, y2 = font.getbbox(label)
+        text_width, text_height = x2 - x1, y2 - y1
     except AttributeError:
+        x1, y1 = 0, 0
         text_width, text_height = font.getsize(label)
-        
+
     # Calculate box coordinates with padding
     if (y - text_height - padding) > 0:
-        box_pt1, box_pt2 = (x, y+padding), (x+text_width+padding, y-text_height-padding)
-        label_pt = (box_pt1[0], box_pt1[1]-text_height)
+        box_pt1 = (x, y - text_height - padding)
+        box_pt2 = (x + text_width + padding*2, y + padding)
+        label_pt = (box_pt1[0] + padding - x1, box_pt1[1] + padding - y1)
     else:
-        box_pt1, box_pt2 = (x, y+text_height+ padding*2), (x+text_width+padding, y+padding)
-        label_pt = (box_pt1[0], box_pt1[1])
+        box_pt1 = (x, y + padding)
+        box_pt2 = (x + text_width + padding * 2, y + text_height + padding * 2)
+        label_pt = (box_pt1[0] + padding - x1, box_pt1[1] + padding - y1)
 
     draw.rectangle([box_pt1, box_pt2], fill=color)
     draw.text(label_pt, label, font=font, fill=(240, 240, 240))
     return image
 
-# %% ../../nbs/10e_bbox.vis.ipynb 13
+# %% ../../nbs/10e_bbox.vis.ipynb 14
 @delegates(overlay_label)
 def overlay_bbox_labelled(image, bbox, color=None, **kwargs):
     color = color or _random_color()
